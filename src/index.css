@@ -1,3 +1,168 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+  background: #f5f6f8;
+  color: #222;
+}
+
+.app {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.app-header h1 {
+  font-size: 20px;
+  margin: 0 0 12px;
+}
+
+.search-form {
+  display: flex;
+  gap: 8px;
+}
+
+.search-form input {
+  flex: 1;
+  max-width: 420px;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.search-form button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+}
+
+.search-form button:disabled {
+  background: #9db7ea;
+  cursor: default;
+}
+
+.search-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.city-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.city-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+.city-chip button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #6b7280;
+  padding: 0 2px;
+}
+
+.global-zoom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.global-zoom button {
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.scale-label {
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  color: #374151;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.city-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.city-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.city-name {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.city-lat {
+  color: #6b7280;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.city-remove {
+  margin-left: auto;
+  border: none;
+  background: none;
+  font-size: 16px;
+  color: #9ca3af;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.city-remove:hover {
+  color: #dc2626;
+}
+
+.city-map {
+  height: 480px;
+}
+
+.empty-state {
+  margin-top: 80px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 15px;
 }
