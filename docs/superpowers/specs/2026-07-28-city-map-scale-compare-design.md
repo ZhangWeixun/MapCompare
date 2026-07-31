@@ -29,7 +29,7 @@
 | 前端框架 | React 18 + TypeScript + Vite | 现代、热更新、个人项目标准选择 |
 | 地图渲染 | MapLibre GL JS（v5） | 矢量渲染，原生支持小数 zoom，平滑缩放；用户选定 |
 | 矢量瓦片 | OpenFreeMap（`https://tiles.openfreemap.org/styles/liberty`） | 免费、免 API Key、基于 OSM 全球数据 |
-| 地理编码 | Nominatim（`https://nominatim.openstreetmap.org/search`） | 免费、全球地名覆盖；个人低频使用符合其使用策略 |
+| 地理编码 | 双数据源可选：Photon（`https://photon.komoot.io/api`，默认）/ Nominatim（`https://nominatim.openstreetmap.org/search`） | 实测 Nominatim 在国内网络不可达，Photon 可直连；用户按网络情况在界面下拉框切换，选择持久化（2026-07-28 用户确认的变更） |
 | 测试 | vitest | 与 Vite 集成，仅测纯函数 |
 | 状态管理 | React 内置 state + 自定义 hook，不引入额外库 | 状态简单（城市列表 + 一个 zoom 值） |
 
@@ -125,12 +125,14 @@ interface City {
 ### 5.4 geocode.ts
 
 ```ts
-export async function geocodeCity(query: string): Promise<{ name: string; displayName: string; lat: number; lon: number } | null>
+export async function geocodeCity(query: string, provider: GeocodeProvider): Promise<GeocodedCity | null>
 ```
 
-- GET `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=zh,en&q=<encodeURIComponent(query)>`
+- 两个数据源，按 provider 分派：
+  - **Photon**（默认）：GET `https://photon.komoot.io/api/?q=<query>&limit=1`，GeoJSON 返回；短名取 `properties.name`，displayName 由 name/city/state/country 去重拼接；不支持国外城市中文译名（提示用户用英文名）
+  - **Nominatim**：GET `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=zh,en&q=<query>`；短名取 `display_name.split(',')[0]`
 - 结果为空返回 `null`；网络/HTTP 错误抛异常（由 SearchBar 捕获显示）
-- 短名取 `display_name.split(',')[0]`
+- provider 状态在 App 层，存 localStorage（`map-compare:geocoder`），SearchBar 下拉框切换；placeholder 随 provider 变化
 - 重复添加判定（在 App 层）：新结果与已有城市 `|Δlat| < 1e-4 且 |Δlon| < 1e-4` 视为重复，提示并不添加
 
 ### 5.5 CityMap

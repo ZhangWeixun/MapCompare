@@ -3,10 +3,12 @@ import { SearchBar } from './components/SearchBar';
 import { MapGrid } from './components/MapGrid';
 import { useSharedScale } from './hooks/useSharedScale';
 import { scaleDenominatorAtZ0 } from './lib/scale';
-import type { City, GeocodedCity } from './lib/types';
+import type { City, GeocodedCity, GeocodeProvider } from './lib/types';
 
 const CITIES_STORAGE_KEY = 'map-compare:cities';
+const PROVIDER_STORAGE_KEY = 'map-compare:geocoder';
 const DUPLICATE_EPSILON = 1e-4;
+const DEFAULT_PROVIDER: GeocodeProvider = 'photon';
 
 function loadInitialCities(): City[] {
   try {
@@ -35,8 +37,18 @@ function formatScale(z0: number): string {
   return `1:${Number(n.toPrecision(3)).toLocaleString('en-US')}`;
 }
 
+function loadInitialProvider(): GeocodeProvider {
+  try {
+    const raw = localStorage.getItem(PROVIDER_STORAGE_KEY);
+    return raw === 'nominatim' || raw === 'photon' ? raw : DEFAULT_PROVIDER;
+  } catch {
+    return DEFAULT_PROVIDER;
+  }
+}
+
 export default function App() {
   const [cities, setCities] = useState<City[]>(loadInitialCities);
+  const [provider, setProvider] = useState<GeocodeProvider>(loadInitialProvider);
   const { z0, setZ0 } = useSharedScale();
 
   useEffect(() => {
@@ -46,6 +58,14 @@ export default function App() {
       // 持久化失败可忽略
     }
   }, [cities]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PROVIDER_STORAGE_KEY, provider);
+    } catch {
+      // 持久化失败可忽略
+    }
+  }, [provider]);
 
   function addCity(result: GeocodedCity): string | null {
     const duplicate = cities.some(
@@ -66,7 +86,7 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <h1>城市大小对比</h1>
-        <SearchBar cities={cities} onAdd={addCity} onRemove={removeCity} />
+        <SearchBar cities={cities} provider={provider} onProviderChange={setProvider} onAdd={addCity} onRemove={removeCity} />
         <div className="global-zoom">
           <button type="button" onClick={() => setZ0(z0 - 1)} aria-label="缩小">
             −

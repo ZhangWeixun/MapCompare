@@ -1,15 +1,17 @@
 import { useState, type FormEvent } from 'react';
-import type { City, GeocodedCity } from '../lib/types';
+import type { City, GeocodedCity, GeocodeProvider } from '../lib/types';
 import { geocodeCity } from '../lib/geocode';
 
 interface SearchBarProps {
   cities: City[];
+  provider: GeocodeProvider;
+  onProviderChange: (provider: GeocodeProvider) => void;
   /** 返回 null 表示添加成功；返回字符串为错误提示（如重复） */
   onAdd: (result: GeocodedCity) => string | null;
   onRemove: (id: string) => void;
 }
 
-export function SearchBar({ cities, onAdd, onRemove }: SearchBarProps) {
+export function SearchBar({ cities, provider, onProviderChange, onAdd, onRemove }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export function SearchBar({ cities, onAdd, onRemove }: SearchBarProps) {
     setSearching(true);
     setError(null);
     try {
-      const result = await geocodeCity(q);
+      const result = await geocodeCity(q, provider);
       if (result === null) {
         setError('未找到该城市，试试英文地名或更具体的名称');
         return;
@@ -39,18 +41,25 @@ export function SearchBar({ cities, onAdd, onRemove }: SearchBarProps) {
     }
   }
 
+  const placeholder =
+    provider === 'photon' ? '城市名：国内用中文，国外用英文，如 上海 / Copenhagen' : '输入城市名，如：北京 / 哥本哈根 / Vancouver';
+
   return (
     <div className="search-bar">
       <form onSubmit={handleSubmit} className="search-form">
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="输入城市名，如：北京 / Vancouver / 東京"
-          disabled={searching}
-        />
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={placeholder} disabled={searching} />
         <button type="submit" disabled={searching || !query.trim()}>
           {searching ? '搜索中…' : '添加'}
         </button>
+        <select
+          className="provider-select"
+          value={provider}
+          onChange={(e) => onProviderChange(e.target.value as GeocodeProvider)}
+          title="地名搜索数据源，按你的网络情况选择"
+        >
+          <option value="photon">Photon（国内直连）</option>
+          <option value="nominatim">Nominatim（需外网）</option>
+        </select>
       </form>
       {error && <div className="search-error">{error}</div>}
       {cities.length > 0 && (
