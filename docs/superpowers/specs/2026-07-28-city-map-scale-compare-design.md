@@ -89,6 +89,7 @@ src/
 ├── hooks/
 │   └── useSharedScale.ts    // z0 状态 + 持久化 + 变更回调
 └── lib/
+    ├── types.ts             // City 等共享类型
     ├── scale.ts             // 比例尺换算纯函数
     ├── scale.test.ts        // vitest 单测
     └── geocode.ts           // Nominatim 搜索封装
@@ -103,6 +104,8 @@ src/
 
 ### 5.2 数据模型
 
+定义在 `src/lib/types.ts`：
+
 ```ts
 interface City {
   id: string;          // crypto.randomUUID()
@@ -116,7 +119,7 @@ interface City {
 ### 5.3 SearchBar
 
 - 输入框 + 添加按钮，Enter 提交；搜索中按钮置灰显示"搜索中…"
-- 调用 geocode.ts，成功则向 App 回调新增城市；失败在搜索栏下方显示红字提示（见 §7）
+- 调用 geocode.ts，成功则把 geocode 结果回调给 App；**由 App 用 `crypto.randomUUID()` 补 id 构造 City 并追加**（追加前先做 §5.4 的去重判定）；失败在搜索栏下方显示红字提示（见 §7）
 - 搜索框下方显示已添加城市 chips（短名 + × 删除）
 
 ### 5.4 geocode.ts
