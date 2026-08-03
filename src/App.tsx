@@ -100,6 +100,7 @@ export default function App() {
         </div>
       </header>
       <MapGrid cities={cities} z0={z0} onZ0Change={setZ0} onRemove={removeCity} />
+      <footer className="app-footer">© 2026 Weixun Zhang · MIT License</footer>
     </div>
   );
 }

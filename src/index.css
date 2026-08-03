@@ -176,3 +176,10 @@ body {
   color: #6b7280;
   font-size: 15px;
 }
+
+.app-footer {
+  margin: 32px 0 12px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 12px;
+}
