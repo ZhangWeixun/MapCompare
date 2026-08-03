@@ -3,3 +3,7 @@ dist
 *.local
 .DS_Store
 .vercel
+.vercel-tmp
+.vercel-tmp
+.DS_Store
+.vercel
